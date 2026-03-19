@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.xxxxx.svg)](https://doi.org/10.5281/zenodo.xxxxx)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19115529.svg)](https://doi.org/10.5281/zenodo.19115529)
 
 # OceanDataTools (ODT)
 
