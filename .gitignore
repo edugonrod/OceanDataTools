@@ -1,0 +1,9 @@
+*.asv
+*.mlx~
+*.slx.autosave
+*.m~
+*.fig~
+*.mat~
+*.mex*
+*.log
+.DS_Store

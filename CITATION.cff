@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+title: OceanDataTools
+message: If you use this toolbox, please cite it using the metadata below.
+type: software
+
+authors:
+  - family-names: Gonzalez Rodriguez
+    given-names: Eduardo
+    affiliation: CICESE
+    email: egonzale@cicese.mx
+
+abstract: >
+  OceanDataTools is a MATLAB toolbox for processing, analyzing,
+  and visualizing oceanographic datasets. The toolbox includes
+  tools for eddy detection and tracking, front detection,
+  stratification diagnostics, climatology generation,
+  geographic utilities, and visualization tools.
+
+keywords:
+  - oceanography
+  - MATLAB
+  - eddies
+  - ocean fronts
+  - geostrophic velocity
+  - climatology
+  - remote sensing
+
+license: MIT
+
+repository-code: https://github.com/USER/OceanDataTools
+url: https://github.com/USER/OceanDataTools
+
+version: 1.0.0
+date-released: 2026-01-01
+
