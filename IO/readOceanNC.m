@@ -157,10 +157,6 @@ catch
     w360 = min(Lon(:)) >= 0;
 end
 
-if w360
-    lonlims = mod(lonlims,360);
-end
-
 ixlon = sort(dsearchn(Lon(:),lonlims(:)));
 ixlat = sort(dsearchn(Lat(:),latlims(:)));
 lonvec = double(Lon(ixlon(1):ixlon(2)));
@@ -168,9 +164,6 @@ latvec = double(Lat(ixlat(1):ixlat(2)));
 Nx = numel(lonvec);
 Ny = numel(latvec);
 
-if w360
-    lonvec = wrapTo180(lonvec);
-end
 datanc.lonvec = lonvec;
 datanc.latvec = latvec;
 
@@ -266,7 +259,6 @@ for v = 1:nvars
         idx = repmat({':'},1,ndims(raw));
         idx{end+1} = k;
         dat(idx{:}) = raw;
-
         if isfield(cfg,'timename')
             t = double(ncread(ncfiles{k},cfg.timename));
             if contains(tunit,'second')
@@ -293,20 +285,6 @@ for v = 1:nvars
     end
 
     dat = squeeze(dat);
-    if datanc.latvec(1) > datanc.latvec(end)
-        datanc.latvec = flip(datanc.latvec);
-        dat = flip(dat,1);
-    end
-    if datanc.lonvec(1) > datanc.lonvec(end)
-        datanc.lonvec = flip(datanc.lonvec);
-        dat = flip(dat,2);
-    end
-    if isfield(datanc,'depth')
-        if datanc.depth(1) > datanc.depth(end)
-            datanc.depth = flip(datanc.depth);
-            dat = flip(dat,3);
-        end
-    end
     datanc.(varname) = dat;
 end
 vars = {info0.Variables.Name};

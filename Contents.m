@@ -1,5 +1,5 @@
 % OceanDataTools (ODT)
-% Oceanographic Data Analysis Toolbox for MATLAB
+% MATLAB toolbox for oceanographic data analysis and visualization
 %
 % A collection of tools for processing, analyzing, and visualizing
 % oceanographic and geophysical datasets.
@@ -24,7 +24,7 @@
 % GRAPHICS (Visualization utilities)
 %   fancyframe           - Stylized axes frame
 %   gifWriter            - Create animated GIFs from figures
-%   imagescnan           - Image display preserving NaN transparency
+%   imagescNaN           - Image display preserving NaN transparency
 %   logbar               - Logarithmic colorbar
 %   minorticks           - Enable minor ticks on axes
 %   plotband             - Plot shaded confidence bands
@@ -55,13 +55,15 @@
 %   relativevorticity    - Relative vorticity
 %   rossbyradius         - Rossby deformation radius
 %   stratification       - Water column stratification
+%   fitProfileIntegral   - Vertical profile fitting and integration
 %   tsDiagram            - Temperature–salinity diagram
+%   mldPyc               - Mixed layer and pycnocline depth (TEOS-10 compatible)
+%   profileStructure     - Integrated profile diagnostics (MLD, pycnocline, vertical maxima)
+%   vpzThickness         - Vertical productivity zone thickness
+%   extractExtremeUV     - Extract velocity vectors at extreme speeds
 %   uvToAngle            - Vector direction and magnitude
 %   uvToDir              - Convert velocity components to direction
 %   uvToWindDir          - Convert velocity components to wind direction
-%   uvExtreme            - Extract velocity vectors at extreme speeds
-%   fitProfileIntegral   - Fit and integrate vertical profiles
-%   vpzThickness         - Vertical productivity zone thickness
 %   windStressCurl       - Wind stress curl and Ekman pumping
 %   windDirToDeg         - Convert wind direction strings to degrees
 %   windrose             - Wind rose diagram
