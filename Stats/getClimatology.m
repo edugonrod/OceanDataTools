@@ -207,7 +207,7 @@ switch lower(climatology)
     case {'daily','doy','dy'}
         timeunit = (1:366)';
         [~, ~, ic] = unique(day(t, 'dayofyear'));
-    case {'annual','year','yy'}
+    case {'annual','year', 'yearly', 'yy'}
         [timeunit, ~, ic] = unique(year(t));  % timeunit ya viene ordenado
     case {'month_year','mm'}
         tu = [year(t), month(t)];

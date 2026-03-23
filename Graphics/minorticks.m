@@ -40,7 +40,13 @@ if nargin < 3 || isempty(ax)
 end
 
 % Validate inputs
-validateattributes(mintk, {'numeric'}, {'vector', 'finite'}, 'minorticks', 'mintk');
+if ~(isnumeric(mintk) || isdatetime(mintk) || isduration(mintk))
+    error('mintk must be numeric, datetime, or duration.')
+end
+
+if ~isvector(mintk)
+    error('mintk must be a vector.')
+end
 validateattributes(eje, {'char', 'string'}, {'scalartext'}, 'minorticks', 'eje');
 validateattributes(ax, {'matlab.graphics.axis.Axes'}, {'scalar'}, 'minorticks', 'ax');
 
