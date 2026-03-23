@@ -31,6 +31,6 @@ repository-code: https://github.com/USER/OceanDataTools
 url: https://github.com/USER/OceanDataTools
 
 version: 1.0.1
-https://doi.org/10.5281/zenodo.19115529
+doi: https://doi.org/10.5281/zenodo.19115529
 date-released: 2026-03-19
 
