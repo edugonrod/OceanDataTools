@@ -55,7 +55,7 @@ function in = inpolygons(x,y,xv,yv)
 %
 % EGR
 
-if any([isvector(x), isvector(y)])
+if isvector(x) && isvector(y)
     [x, y] = meshgrid(x, y);
 end
 
@@ -66,7 +66,15 @@ np = find(isCw);% Number of polygons
 
 in = zeros([size(x), numel(np)]);
 for P = 1:numel(np)
-    in(:,:,P) = inpolygon(x,y,cell2mat(xsplit(P)), cell2mat(ysplit(P)));
+    xp = cell2mat(xsplit(P));
+    yp = cell2mat(ysplit(P));
+    lonlim = [min(xp) max(xp)];
+    latlim = [min(yp) max(yp)];
+    idx = x >= lonlim(1) & x <= lonlim(2) & y >= latlim(1) & y <= latlim(2);
+    if any(idx(:))
+        tmp = false(size(x));
+        tmp(idx) = inpolygon(x(idx), y(idx), xp, yp);
+        in(:,:,P) = tmp;
+    end
 end
-
 in = squeeze(logical(in));

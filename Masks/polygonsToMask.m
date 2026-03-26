@@ -1,10 +1,10 @@
-function [mask, in] = polygons2mask(lonpoly, latpoly, lonvec, latvec, reducetol)
-%POLYGONS2MASK Create grid mask from geographic polygons
+function [mask, in] = polygonsToMask(lonpoly, latpoly, lonvec, latvec, reducetol, masktype)
+%POLYGONSTOMASK Create grid mask from geographic polygons
 %
-%   mask = POLYGONS2MASK(lonpoly, latpoly, lonvec, latvec)
-%   mask = POLYGONS2MASK(lonpoly, latpoly, lonvec, latvec, reducetol)
+%   mask = POLYGONSTOMASK(lonpoly, latpoly, lonvec, latvec)
+%   mask = POLYGONSTOMASK(lonpoly, latpoly, lonvec, latvec, reducetol)
 %
-%   [mask, in] = POLYGONS2MASK(...)
+%   [mask, in] = POLYGONSTOMASK(...)
 %
 %   Creates a spatial mask from one or more geographic polygons on a regular
 %   grid defined by longitude and latitude coordinates. Polygons must be
@@ -19,10 +19,14 @@ function [mask, in] = polygons2mask(lonpoly, latpoly, lonvec, latvec, reducetol)
 %   reducetol          Optional tolerance for polygon simplification
 %                        using REDUCEM. Default = 0 (no simplification).
 %
+%   masktype            Optional string controlling mask values inside
+%                        polygons ('zeros' default | 'nans')
+%
 %   Outputs
-%   mask               Numeric mask with 0 inside polygons and NaN outside.
+%   mask               Numeric mask with configurable values inside polygons:
+%                       'zeros' (default): inside = 0, outside = NaN
+%                       'nans': inside = NaN, outside = 0
 %                        Same size as the grid defined by latvec × lonvec.
-%                        Useful for masking maps by simple addition.
 %
 %   in                 Logical array equivalent to INPOLYGON evaluated
 %                      on the grid. True values indicate points located
@@ -31,7 +35,7 @@ function [mask, in] = polygons2mask(lonpoly, latpoly, lonvec, latvec, reducetol)
 %                      faster than evaluating INPOLYGON on every grid point.
 %
 %   Example
-%     [mask, in] = polygons2mask(lonpoly, latpoly, lonvec, latvec, 0.1);
+%     [mask, in] = POLYGONSTOMASK(lonpoly, latpoly, lonvec, latvec, 0.1);
 %
 %     % Apply mask to a map
 %     sstmasked = sst + mask;
@@ -45,6 +49,10 @@ function [mask, in] = polygons2mask(lonpoly, latpoly, lonvec, latvec, reducetol)
 
 if nargin < 5
     reducetol = 0;
+end
+
+if nargin < 6
+    masktype = 'zeros';
 end
 
 rows = length(latvec);
@@ -78,5 +86,11 @@ for i = 1:npolys
     in(ir, ic) = in(ir, ic) | localmask;
 end
 
-mask = nan(size(in));
-mask(in) = 0;
+switch lower(masktype)
+    case {'zeros', 'zero', 'z'}
+        mask = zeros(size(in));
+        mask(~in) = nan;
+    case {'nans', 'nan', 'n'}
+        mask = nan(size(in));
+        mask(~in) = 0;
+end

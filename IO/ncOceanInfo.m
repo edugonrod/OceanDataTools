@@ -27,6 +27,17 @@ function [cfg, info] = ncOceanInfo(file)
 %               cfg.latname
 %               cfg.zname
 %               cfg.timename
+%               cfg.lonref
+%                   Longitude reference convention used when subsetting data.
+%                   Possible values:
+%
+%                       'greenwich'
+%                       'equivalent360'
+%                       'native360'
+%
+%                   Default value is inferred automatically by NCOCEANINFO.
+%                   Change to 'native360' if longitude subsetting returns
+%                   incorrect regions.
 %
 %   INFO      Structure containing file inspection information.
 %             General information
@@ -37,6 +48,17 @@ function [cfg, info] = ncOceanInfo(file)
 %             Spatial limits
 %               info.lonrange
 %               info.latrange
+%             Longitude reference system inferred from coordinate range:
+%               'greenwich'      Longitudes defined in the range −180 to 180
+%               'equivalent360'  Longitudes defined in the range 0 to 360 and
+%                                equivalent to a −180 to 180 system
+%
+%             Note:
+%               Some datasets use a 0 to 360 convention that is not directly
+%               equivalent to −180 to 180 (e.g. ERSST). In those cases,
+%               cfg.lonref should be manually set to:
+%                   'native360'
+%               before calling READNCOCEAN.
 %             Optional depth information
 %               info.depth.name
 %               info.depth.range
@@ -95,10 +117,14 @@ names = {nc.Variables.Name};
 low = lower(names);
 
 ilon = find(strcmp(low,'lon') | strcmp(low,'longitude'),1);
-if isempty(ilon), ilon = find(contains(low,'lon'),1); end
+if isempty(ilon)
+    ilon = find(contains(low,'lon'),1);
+end
 
 ilat = find(strcmp(low,'lat') | strcmp(low,'latitude'),1);
-if isempty(ilat), ilat = find(contains(low,'lat'),1); end
+if isempty(ilat)
+    ilat = find(contains(low,'lat'),1);
+end
 
 itim = find(strcmp(low,'time'),1);
 iz = find(strcmp(low,'depth'),1);
@@ -106,6 +132,11 @@ iz = find(strcmp(low,'depth'),1);
 lon = names{ilon};
 lonvec = ncread(file,lon);
 info.lonrange = [min(lonvec(:)) max(lonvec(:))];
+if min(lonvec(:)) < 0
+    info.lonref = 'greenwich';
+else
+    info.lonref = 'equivalent360';
+end
 
 lat = names{ilat};
 latvec = ncread(file,lat);
@@ -135,8 +166,13 @@ if ~isempty(iz)
 end
 
 exclude = {lon,lat};
-if ~isempty(tim), exclude{end+1} = tim; end
-if ~isempty(zname), exclude{end+1} = zname; end
+if ~isempty(tim)
+    exclude{end+1} = tim;
+end
+
+if ~isempty(zname)
+    exclude{end+1} = zname;
+end
 
 datavars = names(~ismember(names,exclude));
 ipal = find(strcmpi(datavars,'palette'),1);
@@ -179,6 +215,7 @@ cfg.index = 1:numel(datavars);
 cfg.varnames = datavars;
 cfg.lonname = lon;
 cfg.latname = lat;
+cfg.lonref = info.lonref;
 
 if ~isempty(zname)
     cfg.zname = zname;

@@ -22,18 +22,37 @@ function datanc = readOceanNC(ncfiles,cfg,lonlims,latlims)
 %             detected in the dataset.
 %
 %   lonlims   Two-element vector specifying longitude limits:
-%
 %                 [lonmin lonmax]
 %
 %   latlims   Two-element vector specifying latitude limits:
-%
 %                 [latmin latmax]
 %
+%   LONGITUDE REFERENCE SYSTEM
+%   The behaviour of longitude subsetting depends on cfg.lonref, which is
+%   automatically defined by NCOCEANINFO and can be modified manually if
+%   needed.
+%
+%   Possible values:
+%       'greenwich'
+%           Dataset uses longitudes in the range −180 to 180.
+%           Longitude limits must be provided in the same system.
+%       'equivalent360'
+%           Dataset uses longitudes in the range 0 to 360 but equivalent to
+%           a −180 to 180 representation. Longitude limits given in either
+%           system are accepted and internally adjusted.
+%       'native360'
+%           Dataset uses a 0 to 360 convention that should not be wrapped to
+%           −180 to 180 (e.g. ERSST). Longitude limits given in −180 to 180
+%           are internally converted only for indexing, while output
+%           coordinates remain unchanged.
+%
+%   If longitude subsetting returns incorrect regions when using
+%   'equivalent360', set:
+%       cfg.lonref = 'native360'
+%   before calling READNCOCEAN.
 %
 %   OUTPUT
-%
 %   out       Structure containing the extracted data and metadata.
-%
 %             Coordinates
 %               out.lonvec
 %               out.latvec
@@ -150,11 +169,40 @@ if nargin < 4 || isempty(latlims)
     latlims = [min(Lat(:)) max(Lat(:))];
 end
 
-try
-    lonmin = ncreadatt(file0,cfg.lonname,'valid_min');
-    w360 = lonmin >= 0;
-catch
-    w360 = min(Lon(:)) >= 0;
+if isfield(cfg,'lonref')
+    switch lower(cfg.lonref)
+        case 'equivalent360'
+            w360 = true;
+        case {'greenwich','native360'}
+            w360 = false;
+        otherwise
+            w360 = min(Lon(:)) >= 0;
+    end
+else
+    try
+        lonmin = ncreadatt(file0,cfg.lonname,'valid_min');
+        w360 = lonmin >= 0;
+    catch
+        w360 = min(Lon(:)) >= 0;
+    end
+end
+
+if w360
+    if abs(diff(lonlims)) < 360
+        lonlims = mod(lonlims,360);
+    else
+        lonlims = [min(Lon(:)) max(Lon(:))];
+    end
+elseif isfield(cfg,'lonref') && strcmpi(cfg.lonref,'native360')
+    if abs(diff(lonlims)) < 360
+        lonlims = mod(lonlims,360);
+    else
+        lonlims = [min(Lon(:)) max(Lon(:))];
+    end
+else
+    if abs(diff(lonlims)) >= 360
+        lonlims = [min(Lon(:)) max(Lon(:))];
+    end
 end
 
 ixlon = sort(dsearchn(Lon(:),lonlims(:)));
@@ -164,6 +212,9 @@ latvec = double(Lat(ixlat(1):ixlat(2)));
 Nx = numel(lonvec);
 Ny = numel(latvec);
 
+if w360
+    lonvec = wrapTo180(lonvec);
+end
 datanc.lonvec = lonvec;
 datanc.latvec = latvec;
 
@@ -259,6 +310,7 @@ for v = 1:nvars
         idx = repmat({':'},1,ndims(raw));
         idx{end+1} = k;
         dat(idx{:}) = raw;
+
         if isfield(cfg,'timename')
             t = double(ncread(ncfiles{k},cfg.timename));
             if contains(tunit,'second')
@@ -285,6 +337,20 @@ for v = 1:nvars
     end
 
     dat = squeeze(dat);
+    if datanc.latvec(1) > datanc.latvec(end)
+        datanc.latvec = flip(datanc.latvec);
+        dat = flip(dat,1);
+    end
+    if datanc.lonvec(1) > datanc.lonvec(end)
+        datanc.lonvec = flip(datanc.lonvec);
+        dat = flip(dat,2);
+    end
+    if isfield(datanc,'depth')
+        if datanc.depth(1) > datanc.depth(end)
+            datanc.depth = flip(datanc.depth);
+            dat = flip(dat,3);
+        end
+    end
     datanc.(varname) = dat;
 end
 vars = {info0.Variables.Name};

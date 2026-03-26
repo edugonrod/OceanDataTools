@@ -16,6 +16,7 @@ The toolbox provides tools commonly required in physical and biogeochemical ocea
 - time-series analysis
 - geographic masking
 - scientific visualization tools
+- NetCDF ocean-data reading and subsetting utilities with configurable longitude conventions
 
 The toolbox is designed to be lightweight, modular, and compatible with standard MATLAB installations.
 
@@ -129,6 +130,7 @@ Tools for statistical analysis and climatology generation:
 - climatology construction and updates
 - group-based statistical summaries
 - Jenks natural breaks classification
+- temporal downsampling of multidimensional arrays
 
 Main functions:
 
@@ -140,6 +142,7 @@ getClimatology
 initStats  
 jenksbreaks  
 groupstats  
+timeDownsample  
 
 
 ## Masking and Spatial Selection
@@ -147,17 +150,15 @@ groupstats
 Polygon tools for efficient spatial masking and regional analysis:
 
 - raster masks from polygons
-- geographic masking utilities
 - polygon optimization for fast plotting
 - multi-polygon point inclusion tests
 - interactive polygon drawing tools
 
 Main functions:
 
-polygons2mask  
+polygonsToMask  
 optimizePolygons  
-inpolygons  
-geomask  
+inpolygons    
 drawgeopolygons  
 
 
@@ -196,7 +197,7 @@ xticklabel2rows
 
 Basic tools for reading oceanographic datasets:
 
-- NetCDF ocean data readers
+- NetCDF ocean data readers with configurable longitude reference handling
 - metadata inspection utilities
 - NASA Blue Marble imagery reader
 - recursive file search tools
@@ -261,9 +262,11 @@ wyrcmap
 
 # Example
 
-[data,lon,lat,time] = readOceanNC('file.nc');
+[cfg,info] = ncOceanInfo('file.nc');
 
-eddies = detectEddies(data,lon,lat);
+out = readOceanNC('file.nc',cfg);
+
+eddies = detectEddies(out.data,out.lonvec,out.latvec);
 tracks = trackEddies(eddies);
 
 stats = eddyStats(tracks);
@@ -272,9 +275,9 @@ stats = eddyStats(tracks);
 # Author
 
 Eduardo Gonzalez Rodriguez  
-CICESE – Centro de Investigación Científica y de Educación Superior de Ensenada 
-La Paz, B.C.S., Mexico 
-egonzale@cicese.edu.mx
+CICESE – Centro de Investigación Científica y de Educación Superior de Ensenada  
+La Paz, B.C.S., Mexico  
+egonzale@cicese.mx
 
 
 # Citation

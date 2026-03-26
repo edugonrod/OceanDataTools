@@ -4,6 +4,8 @@
 % A collection of tools for processing, analyzing, and visualizing
 % oceanographic and geophysical datasets.
 %
+% Version: 1.1.0
+%
 % Author: Eduardo Gonzalez Rodriguez
 % Institution: CICESE
 %
@@ -37,9 +39,8 @@
 % MASKS (Polygon and geographic masking)
 %   drawgeopolygons      - Interactive polygon drawing
 %   inpolygons           - Multi-polygon point inclusion test
-%   geomask              - Generate geographic masks
 %   optimizePolygons     - Optimize polygon structures for fast plotting
-%   polygons2mask        - Convert polygons to raster masks
+%   polygonsToMask       - Convert polygons to raster masks
 %
 % -------------------------------------------------------------------------
 % OCEAN (Oceanographic analysis)
@@ -70,8 +71,8 @@
 %
 % -------------------------------------------------------------------------
 % IO (Data input/output utilities)
-%   readOceanNC          - Generic NetCDF ocean reader
-%   ncOceanInfo          - Inspect NetCDF ocean metadata
+%   readOceanNC          - NetCDF ocean reader with configurable longitude handling
+%   ncOceanInfo          - Inspect NetCDF ocean metadata and coordinate conventions
 %   readbluemarble       - Read NASA Blue Marble imagery
 %   findFiles            - Recursive file search utility
 %
@@ -85,6 +86,7 @@
 %   initStats            - Initialize incremental statistics
 %   jenksbreaks          - Jenks natural breaks classification
 %   updateclimatology    - Update climatology datasets
+%   timeDownsample       - Temporal aggregation of multidimensional datasets
 %
 % -------------------------------------------------------------------------
 % UTILS (General utilities)
